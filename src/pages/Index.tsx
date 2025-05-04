@@ -5,7 +5,7 @@ import MapSelector from '@/components/MapSelector';
 import FeatureCard from '@/components/FeatureCard';
 import ChatAssistant from '@/components/ChatAssistant';
 import Footer from '@/components/Footer';
-import { Calendar, Disease, HandCoins, Market, Tractor, Wheat } from 'lucide-react';
+import { Calendar, Microscope, HandCoins, ShoppingBag, Tractor, Wheat } from 'lucide-react';
 
 interface Location {
   id: number;
@@ -82,7 +82,7 @@ const Index = () => {
                   onClick={() => handleFeatureClick('crop-suggestion')}
                 />
                 <FeatureCard 
-                  icon={<Disease className="w-10 h-10" />}
+                  icon={<Microscope className="w-10 h-10" />}
                   title="Disease & Fertilizer"
                   description="Identify crop diseases and get treatment recommendations"
                   onClick={() => handleFeatureClick('disease-detection')}
@@ -94,7 +94,7 @@ const Index = () => {
                   onClick={() => handleFeatureClick('tool-renting')}
                 />
                 <FeatureCard 
-                  icon={<Market className="w-10 h-10" />}
+                  icon={<ShoppingBag className="w-10 h-10" />}
                   title="Market Analysis"
                   description="Compare crop prices across wholesale markets and connect with buyers"
                   onClick={() => handleFeatureClick('market-analysis')}
