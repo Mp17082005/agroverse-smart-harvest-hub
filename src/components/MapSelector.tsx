@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, MapPin } from 'lucide-react';
 
 interface Location {
@@ -17,18 +18,32 @@ const sampleLocations: Location[] = [
 ];
 
 interface MapSelectorProps {
-  onLocationSelect: (location: Location) => void;
+  onLocationSelect?: (location: Location) => void;
+  navigateOnSelect?: boolean;
 }
 
-const MapSelector = ({ onLocationSelect }: MapSelectorProps) => {
+const MapSelector = ({ onLocationSelect, navigateOnSelect = true }: MapSelectorProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showLocations, setShowLocations] = useState(false);
+  const navigate = useNavigate();
 
   const filteredLocations = searchQuery 
     ? sampleLocations.filter(loc => 
         loc.name.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : sampleLocations;
+
+  const handleSelectLocation = (location: Location) => {
+    if (onLocationSelect) {
+      onLocationSelect(location);
+    }
+    
+    if (navigateOnSelect) {
+      navigate(`/location/${location.id}`);
+    }
+    
+    setShowLocations(false);
+  };
 
   return (
     <div className="w-full max-w-4xl mx-auto my-6">
@@ -75,10 +90,7 @@ const MapSelector = ({ onLocationSelect }: MapSelectorProps) => {
                         <li key={location.id}>
                           <button
                             className="w-full flex items-center gap-3 p-3 hover:bg-agro-green-light/10 rounded-lg text-left transition-colors"
-                            onClick={() => {
-                              onLocationSelect(location);
-                              setShowLocations(false);
-                            }}
+                            onClick={() => handleSelectLocation(location)}
                           >
                             <MapPin className="w-5 h-5 text-agro-green-dark flex-shrink-0" />
                             <div>

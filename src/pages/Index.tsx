@@ -58,62 +58,49 @@ const Index = () => {
         
         {/* Map Section */}
         <section className="py-6">
-          <MapSelector onLocationSelect={handleLocationSelect} />
+          <MapSelector 
+            onLocationSelect={handleLocationSelect} 
+            navigateOnSelect={true}
+          />
         </section>
         
         {/* Features Section */}
         <section id="features" className="py-8 md:py-12">
-          {selectedLocation ? (
-            <>
-              <div className="text-center mb-8">
-                <h2 className="text-2xl md:text-3xl font-bold text-agro-green-dark mb-2">
-                  Services for {selectedLocation.name}
-                </h2>
-                <p className="text-agro-brown-light">
-                  Select a service to get started
-                </p>
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-                <FeatureCard 
-                  icon={<Wheat className="w-10 h-10" />}
-                  title="Crop Suggestion"
-                  description="Get personalized crop recommendations based on soil data and weather"
-                  onClick={() => handleFeatureClick('crop-suggestion')}
-                />
-                <FeatureCard 
-                  icon={<Microscope className="w-10 h-10" />}
-                  title="Disease & Fertilizer"
-                  description="Identify crop diseases and get treatment recommendations"
-                  onClick={() => handleFeatureClick('disease-detection')}
-                />
-                <FeatureCard 
-                  icon={<Tractor className="w-10 h-10" />}
-                  title="Tool Renting"
-                  description="Connect with local farmers to rent or share agricultural tools"
-                  onClick={() => handleFeatureClick('tool-renting')}
-                />
-                <FeatureCard 
-                  icon={<ShoppingBag className="w-10 h-10" />}
-                  title="Market Analysis"
-                  description="Compare crop prices across wholesale markets and connect with buyers"
-                  onClick={() => handleFeatureClick('market-analysis')}
-                />
-              </div>
-            </>
-          ) : (
-            <div className="text-center bg-white p-8 rounded-xl shadow-sm">
-              <div className="w-20 h-20 mx-auto mb-6 flex items-center justify-center bg-agro-yellow/20 rounded-full text-agro-brown-dark animate-bounce-gentle">
-                <MapSelector onLocationSelect={handleLocationSelect} /> 
-              </div>
-              <h2 className="text-2xl font-bold text-agro-brown-dark mb-3">
-                Select Your Farm Location First
-              </h2>
-              <p className="text-agro-brown-light mb-6 max-w-lg mx-auto">
-                Use the map above to select your farm location. This helps us provide personalized recommendations based on your specific conditions.
-              </p>
-            </div>
-          )}
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-agro-green-dark mb-2">
+              Our Services
+            </h2>
+            <p className="text-agro-brown-light">
+              Select your location to get personalized recommendations
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+            <FeatureCard 
+              icon={<Wheat className="w-10 h-10" />}
+              title="Crop Suggestion"
+              description="Get personalized crop recommendations based on soil data and weather"
+              onClick={() => handleFeatureClick('crop-suggestion')}
+            />
+            <FeatureCard 
+              icon={<Microscope className="w-10 h-10" />}
+              title="Disease & Fertilizer"
+              description="Identify crop diseases and get treatment recommendations"
+              onClick={() => handleFeatureClick('disease-detection')}
+            />
+            <FeatureCard 
+              icon={<Tractor className="w-10 h-10" />}
+              title="Tool Renting"
+              description="Connect with local farmers to rent or share agricultural tools"
+              onClick={() => handleFeatureClick('tool-renting')}
+            />
+            <FeatureCard 
+              icon={<ShoppingBag className="w-10 h-10" />}
+              title="Market Analysis"
+              description="Compare crop prices across wholesale markets and connect with buyers"
+              onClick={() => handleFeatureClick('market-analysis')}
+            />
+          </div>
         </section>
         
         {/* Benefits Section */}
