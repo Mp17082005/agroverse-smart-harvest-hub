@@ -1,3 +1,4 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -39,4 +40,33 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* Accessibility improvements */
+.user-is-tabbing *:focus {
+  outline: 3px solid #84CC16 !important;
+  outline-offset: 3px !important;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Increase touch targets for mobile */
+@media (max-width: 768px) {
+  button, a, input, select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  input[type="text"], 
+  input[type="search"] {
+    font-size: 16px; /* Prevents iOS zoom */
+  }
 }

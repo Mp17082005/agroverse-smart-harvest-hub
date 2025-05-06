@@ -75,6 +75,27 @@
 
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
+  }
+
+  /* Custom scrollbar for better visibility */
+  ::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: #f0f0e8;
+    border-radius: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #4D7C0F;
+    border-radius: 8px;
+    border: 2px solid #f0f0e8;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #84CC16;
   }
 }
 
@@ -102,4 +123,41 @@
   .feature-card {
     @apply bg-white rounded-2xl shadow-md p-6 flex flex-col items-center text-center transition-transform duration-200 hover:shadow-lg hover:-translate-y-1;
   }
+  
+  /* Improved touch targets for better accessibility */
+  .large-touch-target {
+    @apply min-h-[64px] min-w-[64px] p-4;
+  }
+  
+  /* Visual cues for interactive elements */
+  .interactive-element {
+    @apply relative overflow-hidden;
+  }
+  
+  .interactive-element::after {
+    @apply content-[''] absolute inset-0 bg-agro-green-light/20 scale-0 transition-transform duration-300 rounded-lg;
+  }
+  
+  .interactive-element:hover::after {
+    @apply scale-100;
+  }
+  
+  /* Helper classes for accessibility */
+  .high-contrast-text {
+    @apply text-agro-brown-dark font-medium;
+  }
+  
+  .icon-with-label {
+    @apply flex flex-col items-center gap-2 text-center;
+  }
+  
+  /* Make buttons extra obvious for low literacy users */
+  .farmer-friendly-btn {
+    @apply agro-btn flex flex-col items-center gap-2 px-5 py-4 min-w-[120px] min-h-[100px] text-xl;
+  }
+  
+  .farmer-friendly-icon {
+    @apply text-4xl mb-1;
+  }
 }
+
