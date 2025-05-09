@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, Wheat } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -30,25 +30,17 @@ const sampleLocations: Location[] = [
   { id: 4, name: "West Plantation", lat: 18.5204, lng: 73.8567 }
 ];
 
-const defaultPosition = [20.5937, 78.9629]; // Center of India
+const defaultPosition: [number, number] = [20.5937, 78.9629]; // Center of India
 
-// Custom marker component
-function LocationMarkerComponent({ position, onLocationSelect }: { 
-  position: [number, number] | null;
-  onLocationSelect: (lat: number, lng: number) => void;
-}) {
+// Map click handler component
+function MapClickHandler({ onMapClick }: { onMapClick: (lat: number, lng: number) => void }) {
   const map = useMap();
   
-  // Handle map click
   useEffect(() => {
     if (!map) return;
     
     const handleClick = (e: L.LeafletMouseEvent) => {
-      onLocationSelect(e.latlng.lat, e.latlng.lng);
-      toast({
-        title: "Location selected",
-        description: `Latitude: ${e.latlng.lat.toFixed(4)}, Longitude: ${e.latlng.lng.toFixed(4)}`,
-      });
+      onMapClick(e.latlng.lat, e.latlng.lng);
     };
     
     map.on('click', handleClick);
@@ -56,16 +48,9 @@ function LocationMarkerComponent({ position, onLocationSelect }: {
     return () => {
       map.off('click', handleClick);
     };
-  }, [map, onLocationSelect]);
-
-  return position === null ? null : (
-    <Marker position={position}>
-      <Popup>
-        Your selected location<br />
-        Lat: {position[0].toFixed(4)}, Lng: {position[1].toFixed(4)}
-      </Popup>
-    </Marker>
-  );
+  }, [map, onMapClick]);
+  
+  return null;
 }
 
 interface MapSelectorProps {
@@ -128,6 +113,11 @@ const MapSelector = ({ onLocationSelect, navigateOnSelect = true }: MapSelectorP
     if (onLocationSelect) {
       onLocationSelect(newCustomLocation);
     }
+    
+    toast({
+      title: "Location selected",
+      description: `Latitude: ${lat.toFixed(4)}, Longitude: ${lng.toFixed(4)}`,
+    });
   };
 
   return (
@@ -140,7 +130,7 @@ const MapSelector = ({ onLocationSelect, navigateOnSelect = true }: MapSelectorP
         
         <div className="relative h-[400px] sm:h-[500px] bg-agro-sky/20 border-b border-t border-agro-green-light/30">
           <MapContainer 
-            center={defaultPosition as [number, number]} 
+            center={defaultPosition} 
             zoom={5} 
             scrollWheelZoom={true} 
             style={{ height: '100%', width: '100%' }}
@@ -150,7 +140,6 @@ const MapSelector = ({ onLocationSelect, navigateOnSelect = true }: MapSelectorP
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             
-            {/* Display pre-defined locations */}
             {sampleLocations.map(loc => (
               <Marker 
                 key={loc.id} 
@@ -166,11 +155,16 @@ const MapSelector = ({ onLocationSelect, navigateOnSelect = true }: MapSelectorP
               </Marker>
             ))}
             
-            {/* Display user-selected location */}
-            <LocationMarkerComponent 
-              position={selectedPosition} 
-              onLocationSelect={handleMapLocationSelect} 
-            />
+            {selectedPosition && (
+              <Marker position={selectedPosition}>
+                <Popup>
+                  {customLocation?.name || 'Selected Location'}<br/>
+                  Lat: {selectedPosition[0].toFixed(4)}, Lng: {selectedPosition[1].toFixed(4)}
+                </Popup>
+              </Marker>
+            )}
+            
+            <MapClickHandler onMapClick={handleMapLocationSelect} />
           </MapContainer>
           
           <div className="absolute top-4 left-4 right-4 z-[1000] bg-white/90 rounded-xl p-2 shadow-lg">
