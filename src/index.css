@@ -97,6 +97,35 @@
   ::-webkit-scrollbar-thumb:hover {
     background-color: #84CC16;
   }
+  
+  /* Leaflet specific styles */
+  .leaflet-container {
+    font-family: 'Inter', sans-serif;
+    z-index: 1;
+  }
+  
+  .leaflet-popup-content-wrapper {
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .leaflet-popup-content {
+    margin: 0.75rem 1rem;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .leaflet-touch .leaflet-bar a {
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+  }
+  
+  /* Make Leaflet controls more touch-friendly */
+  .leaflet-touch .leaflet-control-layers,
+  .leaflet-touch .leaflet-bar {
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
 }
 
 @layer components {
@@ -159,5 +188,34 @@
   .farmer-friendly-icon {
     @apply text-4xl mb-1;
   }
+  
+  /* Animation class for speech indicator */
+  .animate-pulse-gentle {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+  
+  /* Fade in animation for UI elements */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
-
