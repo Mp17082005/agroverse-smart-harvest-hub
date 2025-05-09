@@ -61,7 +61,7 @@ const Index = () => {
         <section className="py-6">
           <MapSelector 
             onLocationSelect={handleLocationSelect} 
-            navigateOnSelect={true}
+            navigateOnSelect={false}
           />
         </section>
         

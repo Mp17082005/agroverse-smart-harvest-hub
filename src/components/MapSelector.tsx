@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, Wheat } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -32,23 +32,23 @@ const sampleLocations: Location[] = [
 
 const defaultPosition: [number, number] = [20.5937, 78.9629]; // Center of India
 
-// Map click handler component
-function MapClickHandler({ onMapClick }: { onMapClick: (lat: number, lng: number) => void }) {
+// Map click handler component as a separate functional component
+function MapClickHandler({ onLocationSelect }: { onLocationSelect: (lat: number, lng: number) => void }) {
   const map = useMap();
   
   useEffect(() => {
     if (!map) return;
     
-    const handleClick = (e: L.LeafletMouseEvent) => {
-      onMapClick(e.latlng.lat, e.latlng.lng);
-    };
+    function handleMapClick(e: L.LeafletMouseEvent) {
+      onLocationSelect(e.latlng.lat, e.latlng.lng);
+    }
     
-    map.on('click', handleClick);
+    map.on('click', handleMapClick);
     
     return () => {
-      map.off('click', handleClick);
+      map.off('click', handleMapClick);
     };
-  }, [map, onMapClick]);
+  }, [map, onLocationSelect]);
   
   return null;
 }
@@ -85,7 +85,7 @@ const MapSelector = ({ onLocationSelect, navigateOnSelect = true }: MapSelectorP
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSelectLocation = (location: Location) => {
+  const handleSelectLocation = useCallback((location: Location) => {
     if (onLocationSelect) {
       onLocationSelect(location);
     }
@@ -96,9 +96,9 @@ const MapSelector = ({ onLocationSelect, navigateOnSelect = true }: MapSelectorP
     
     setShowLocations(false);
     setSelectedPosition([location.lat, location.lng]);
-  };
+  }, [navigate, navigateOnSelect, onLocationSelect]);
 
-  const handleMapLocationSelect = (lat: number, lng: number) => {
+  const handleMapLocationSelect = useCallback((lat: number, lng: number) => {
     // Create a custom location object
     const newCustomLocation = {
       id: Math.floor(Math.random() * 10000), // Generate random ID
@@ -118,7 +118,7 @@ const MapSelector = ({ onLocationSelect, navigateOnSelect = true }: MapSelectorP
       title: "Location selected",
       description: `Latitude: ${lat.toFixed(4)}, Longitude: ${lng.toFixed(4)}`,
     });
-  };
+  }, [onLocationSelect]);
 
   return (
     <div className="w-full max-w-4xl mx-auto my-6">
@@ -164,7 +164,7 @@ const MapSelector = ({ onLocationSelect, navigateOnSelect = true }: MapSelectorP
               </Marker>
             )}
             
-            <MapClickHandler onMapClick={handleMapLocationSelect} />
+            <MapClickHandler onLocationSelect={handleMapLocationSelect} />
           </MapContainer>
           
           <div className="absolute top-4 left-4 right-4 z-[1000] bg-white/90 rounded-xl p-2 shadow-lg">
