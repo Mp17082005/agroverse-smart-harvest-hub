@@ -1,12 +1,12 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
 import { toast } from '@/hooks/use-toast';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 
 // Fix for default marker icon in Leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -32,23 +32,13 @@ const sampleLocations: Location[] = [
 
 const defaultPosition: [number, number] = [20.5937, 78.9629]; // Center of India
 
-// Map click handler as a separate function component
-const MapClickHandler = ({ onLocationSelect }: { onLocationSelect: (lat: number, lng: number) => void }) => {
-  const map = useMap();
-  
-  useEffect(() => {
-    if (!map) return;
-    
-    const handleMapClick = (e: L.LeafletMouseEvent) => {
-      onLocationSelect(e.latlng.lat, e.latlng.lng);
-    };
-    
-    map.on('click', handleMapClick);
-    
-    return () => {
-      map.off('click', handleMapClick);
-    };
-  }, [map, onLocationSelect]);
+// Using useMapEvents hook instead of useMap for better event handling
+const MapClickListener = ({ onMapClick }: { onMapClick: (lat: number, lng: number) => void }) => {
+  useMapEvents({
+    click: (e) => {
+      onMapClick(e.latlng.lat, e.latlng.lng);
+    }
+  });
   
   return null;
 };
@@ -66,11 +56,12 @@ const MapSelector = ({ onLocationSelect, navigateOnSelect = true }: MapSelectorP
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  const filteredLocations = searchQuery 
-    ? sampleLocations.filter(loc => 
-        loc.name.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : sampleLocations;
+  const filteredLocations = useMemo(() => {
+    if (!searchQuery) return sampleLocations;
+    return sampleLocations.filter(loc => 
+      loc.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery]);
 
   // Close location dropdown when clicking outside
   useEffect(() => {
@@ -98,7 +89,7 @@ const MapSelector = ({ onLocationSelect, navigateOnSelect = true }: MapSelectorP
     setSelectedPosition([location.lat, location.lng]);
   }, [navigate, navigateOnSelect, onLocationSelect]);
 
-  const handleMapLocationSelect = useCallback((lat: number, lng: number) => {
+  const handleMapClick = useCallback((lat: number, lng: number) => {
     // Create a custom location object
     const newCustomLocation = {
       id: Math.floor(Math.random() * 10000), // Generate random ID
@@ -164,7 +155,7 @@ const MapSelector = ({ onLocationSelect, navigateOnSelect = true }: MapSelectorP
               </Marker>
             )}
             
-            <MapClickHandler onLocationSelect={handleMapLocationSelect} />
+            <MapClickListener onMapClick={handleMapClick} />
           </MapContainer>
           
           <div className="absolute top-4 left-4 right-4 z-[1000] bg-white/90 rounded-xl p-2 shadow-lg">
