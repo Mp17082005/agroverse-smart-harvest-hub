@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, Wheat } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { toast } from '@/hooks/use-toast';
@@ -32,23 +32,31 @@ const sampleLocations: Location[] = [
 
 const defaultPosition = [20.5937, 78.9629]; // Center of India
 
-interface LocationMarkerProps {
+// Custom marker component
+function LocationMarkerComponent({ position, onLocationSelect }: { 
+  position: [number, number] | null;
   onLocationSelect: (lat: number, lng: number) => void;
-}
-
-function LocationMarker({ onLocationSelect }: LocationMarkerProps) {
-  const [position, setPosition] = useState<[number, number] | null>(null);
+}) {
+  const map = useMap();
   
-  const map = useMapEvents({
-    click(e) {
-      setPosition([e.latlng.lat, e.latlng.lng]);
+  // Handle map click
+  useEffect(() => {
+    if (!map) return;
+    
+    const handleClick = (e: L.LeafletMouseEvent) => {
       onLocationSelect(e.latlng.lat, e.latlng.lng);
       toast({
         title: "Location selected",
         description: `Latitude: ${e.latlng.lat.toFixed(4)}, Longitude: ${e.latlng.lng.toFixed(4)}`,
       });
-    },
-  });
+    };
+    
+    map.on('click', handleClick);
+    
+    return () => {
+      map.off('click', handleClick);
+    };
+  }, [map, onLocationSelect]);
 
   return position === null ? null : (
     <Marker position={position}>
@@ -69,6 +77,7 @@ const MapSelector = ({ onLocationSelect, navigateOnSelect = true }: MapSelectorP
   const [searchQuery, setSearchQuery] = useState("");
   const [showLocations, setShowLocations] = useState(false);
   const [customLocation, setCustomLocation] = useState<Location | null>(null);
+  const [selectedPosition, setSelectedPosition] = useState<[number, number] | null>(null);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
@@ -101,6 +110,7 @@ const MapSelector = ({ onLocationSelect, navigateOnSelect = true }: MapSelectorP
     }
     
     setShowLocations(false);
+    setSelectedPosition([location.lat, location.lng]);
   };
 
   const handleMapLocationSelect = (lat: number, lng: number) => {
@@ -113,6 +123,7 @@ const MapSelector = ({ onLocationSelect, navigateOnSelect = true }: MapSelectorP
     };
     
     setCustomLocation(newCustomLocation);
+    setSelectedPosition([lat, lng]);
     
     if (onLocationSelect) {
       onLocationSelect(newCustomLocation);
@@ -155,8 +166,11 @@ const MapSelector = ({ onLocationSelect, navigateOnSelect = true }: MapSelectorP
               </Marker>
             ))}
             
-            {/* Allow user to select custom locations */}
-            <LocationMarker onLocationSelect={handleMapLocationSelect} />
+            {/* Display user-selected location */}
+            <LocationMarkerComponent 
+              position={selectedPosition} 
+              onLocationSelect={handleMapLocationSelect} 
+            />
           </MapContainer>
           
           <div className="absolute top-4 left-4 right-4 z-[1000] bg-white/90 rounded-xl p-2 shadow-lg">
