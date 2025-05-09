@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, Wheat } from 'lucide-react';
+import { Search, MapPin } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -32,16 +32,16 @@ const sampleLocations: Location[] = [
 
 const defaultPosition: [number, number] = [20.5937, 78.9629]; // Center of India
 
-// Map click handler component as a separate functional component
-function MapClickHandler({ onLocationSelect }: { onLocationSelect: (lat: number, lng: number) => void }) {
+// Map click handler as a separate function component
+const MapClickHandler = ({ onLocationSelect }: { onLocationSelect: (lat: number, lng: number) => void }) => {
   const map = useMap();
   
   useEffect(() => {
     if (!map) return;
     
-    function handleMapClick(e: L.LeafletMouseEvent) {
+    const handleMapClick = (e: L.LeafletMouseEvent) => {
       onLocationSelect(e.latlng.lat, e.latlng.lng);
-    }
+    };
     
     map.on('click', handleMapClick);
     
@@ -51,7 +51,7 @@ function MapClickHandler({ onLocationSelect }: { onLocationSelect: (lat: number,
   }, [map, onLocationSelect]);
   
   return null;
-}
+};
 
 interface MapSelectorProps {
   onLocationSelect?: (location: Location) => void;
